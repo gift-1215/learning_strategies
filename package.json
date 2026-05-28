@@ -1,9 +1,0 @@
-{
-  "name": "learning-strategies",
-  "version": "1.0.0",
-  "description": "Learning Strategies Interactive Game",
-  "scripts": {
-    "build": "echo 'No build needed'"
-  },
-  "dependencies": {}
-}
