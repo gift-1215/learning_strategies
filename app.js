@@ -1,32 +1,13 @@
 "use strict";
 
-// Build Trigger: 2026-05-28 15:55
 const TOTAL_SECONDS = 60;
 const strategies = [
-  {
-    title: "看書名",
-    detail: "先抓主題、關鍵詞，以及這本書可能要回答的問題。"
-  },
-  {
-    title: "看書背與書腰介紹",
-    detail: "快速找出作者想解決什麼問題，以及出版社主打的重點。"
-  },
-  {
-    title: "看作者簡介",
-    detail: "判斷作者的背景、視角，以及他為什麼能談這個主題。"
-  },
-  {
-    title: "看目錄",
-    detail: "掌握全書架構、章節順序，推論作者如何安排論點。"
-  },
-  {
-    title: "找一頁翻翻看",
-    detail: "體會讀起來的感受：例子多不多、論證難不難、語氣適不適合自己。"
-  },
-  {
-    title: "翻到最後面看結論",
-    detail: "作者通常會把最精華、最核心的結論放在最後面。"
-  }
+  { title: "看書名", detail: "先抓主題、關鍵詞，以及這本書可能要回答的問題。" },
+  { title: "看書背與書腰介紹", detail: "快速找出作者想解決什麼問題，以及出版社主打的重點。" },
+  { title: "看作者簡介", detail: "判斷作者的背景、視角，以及他為什麼能談這個主題。" },
+  { title: "看目錄", detail: "掌握全書架構、章節順序，推論作者如何安排論點。" },
+  { title: "找一頁翻翻看", detail: "體會讀起來的感受：例子多不多、論證難不難、語氣適不適合自己。" },
+  { title: "翻到最後面看結論", detail: "作者通常會把最精華、最核心的結論放在最後面。" }
 ];
 
 const books = [
@@ -35,34 +16,9 @@ const books = [
     title: "原子習慣",
     image: "原子習慣.webp",
     questions: [
-      {
-        question: "這本書最核心的主張是什麼？",
-        prompt: "請根據封面標語與章節安排，選出最符合的答案。",
-        options: [
-          "成功來自天賦與意志力",
-          "巨大的改變來自持續的微小習慣累積",
-          "習慣只能靠外在監督建立",
-          "壞習慣無法真正被改變"
-        ],
-        answer: 1
-      },
-      {
-        question: "作者最想解決的是哪一類問題？",
-        prompt: "請從目錄中的章節名稱推論。",
-        options: ["如何快速累積財富", "如何提升閱讀速度", "如何持續改變行為", "如何訓練領導能力"],
-        answer: 2
-      },
-      {
-        question: "在 30 秒略讀後，你認為哪三個詞最接近本書的重要概念？",
-        prompt: "請從下列選項中挑出最合理的一組。",
-        options: [
-          "意志力／懲罰／競爭",
-          "環境／獎勵／身分認同",
-          "天賦／效率／管理",
-          "情緒／直覺／冒險"
-        ],
-        answer: 1
-      }
+      { question: "這本書最核心的主張是什麼？", options: ["成功來自天賦與意志力", "巨大的改變來自持續的微小習慣累積", "習慣只能靠外在監督建立", "壞習慣無法真正被改變"], answer: 1 },
+      { question: "作者最想解決的是哪一類問題？", options: ["如何快速累積財富", "如何提升閱讀速度", "如何持續改變行為", "如何訓練領導能力"], answer: 2 },
+      { question: "在 30 秒略讀後，你認為哪三個詞最接近本書的重要概念？", options: ["意志力／懲罰／競爭", "環境／獎勵／身分認同", "天賦／效率／管理", "情緒／直覺／冒險"], answer: 1 }
     ]
   },
   {
@@ -70,34 +26,9 @@ const books = [
     title: "神經可塑性",
     image: "神經可塑性.webp",
     questions: [
-      {
-        question: "這本書最核心的觀點是什麼？",
-        prompt: "",
-        options: [
-          "情緒問題只能靠藥物改善",
-          "人的性格無法真正改變",
-          "大腦具有可改變性，思想與行為能重新塑造神經連結",
-          "壓力與焦慮是現代人無法避免的宿命"
-        ],
-        answer: 2
-      },
-      {
-        question: "作者最想幫助讀者解決哪種問題？",
-        prompt: "",
-        options: ["如何提升工作效率", "如何改善負面思考", "如何學會快速閱讀", "如何建立財務自由"],
-        answer: 1
-      },
-      {
-        question: "從封面標語與目錄判斷，下列哪組最接近本書的重要關鍵概念？",
-        prompt: "",
-        options: [
-          "神經可塑性／負面偏見／視覺化",
-          "領導力／說服力／談判技巧",
-          "意志力／競爭／效率",
-          "靈感／創業／冒險"
-        ],
-        answer: 0
-      }
+      { question: "這本書最核心的觀點是什麼？", options: ["情緒問題只能靠藥物改善", "人的性格無法真正改變", "大腦具有可改變性", "壓力與焦慮是命運"], answer: 2 },
+      { question: "作者最想幫助讀者解決哪種問題？", options: ["如何提升工作效率", "如何改善負面思考", "如何學會快速閱讀", "如何建立財務自由"], answer: 1 },
+      { question: "下列哪組最接近本書的重要關鍵概念？", options: ["神經可塑性／負面偏見／視覺化", "領導力／說服力", "意志力／競爭", "靈感／創業"], answer: 0 }
     ]
   },
   {
@@ -105,39 +36,9 @@ const books = [
     title: "命定",
     image: "命定.webp",
     questions: [
-      {
-        question: "從目錄結構推論，本書最關鍵也最困難的部分是什麼？",
-        prompt: "前半論證沒有自由意志，後半題目是「Now What?」。",
-        options: [
-          "證明大腦有做出決定的空間",
-          "主張行為完全被基因決定",
-          "既然自由意志不存在，我們該如何重建責任、懲罰、獎賞與司法制度",
-          "提倡放棄一切道德判斷與情感"
-        ],
-        answer: 2
-      },
-      {
-        question: "從目錄推論，作者明確「反對」、認為救不了自由意志的論點是什麼？",
-        prompt: "",
-        options: [
-          "神經科學可以研究人類行為",
-          "童年經驗會影響成年行為",
-          "量子不確定性、混沌理論或 emergence 可以為自由意志保留空間",
-          "環境會影響選擇"
-        ],
-        answer: 2
-      },
-      {
-        question: "略讀後最接近本書的三個核心概念是什麼？",
-        prompt: "",
-        options: [
-          "命運／儀式／預言",
-          "基因與激素／意志力訓練／決策技巧",
-          "道德哲學／不確定性／來世",
-          "決定論／自由意志的不存在／重新思考懲罰"
-        ],
-        answer: 3
-      }
+      { question: "本書最關鍵也最困難的部分是什麼？", options: ["證明大腦有決定空間", "主張行為被基因決定", "重建責任、懲罰與司法制度", "提倡放棄道德判斷"], answer: 2 },
+      { question: "作者明確「反對」的論點是什麼？", options: ["神經科學研究行為", "童年影響行為", "量子不確定性為自由意志保留空間", "環境影響選擇"], answer: 2 },
+      { question: "最接近本書的核心概念是什麼？", options: ["命運／儀式", "基因與激素", "道德哲學", "決定論／重新思考懲罰"], answer: 3 }
     ]
   },
   {
@@ -145,39 +46,9 @@ const books = [
     title: "為工作而活 Work",
     image: "為工作而活.jpg",
     questions: [
-      {
-        question: "從目錄推論，本書最反直覺的論點是什麼？",
-        prompt: "",
-        options: [
-          "科技進步讓現代人比古代人輕鬆許多",
-          "狩獵採集者每週工作時數遠少於現代人，「為工作而活」是晚近才出現的歷史產物",
-          "工作越多，社會越進步",
-          "自動化終將完全取消工作"
-        ],
-        answer: 1
-      },
-      {
-        question: "從章節結構推論，作者最想回答的問題是什麼？",
-        prompt: "",
-        options: [
-          "如何在 AI 時代提升個人生產力",
-          "在生涯探索上，我們如何才能選到自己一輩子熱愛的工作",
-          "「朝九晚五為工作賣命」是演化與文化的結果，但並非人類生存的唯一解方",
-          "為什麼人類天生就喜歡透過工作來累積財富"
-        ],
-        answer: 2
-      },
-      {
-        question: "略讀後最接近本書的三個核心概念是什麼？",
-        prompt: "",
-        options: [
-          "狩獵採集／能量與熵／稀缺性的建構",
-          "生涯探索／斜槓／被動收入",
-          "KPI／科技生產力／時間管理",
-          "領導力／組織設計／企業文化"
-        ],
-        answer: 0
-      }
+      { question: "本書最反直覺的論點是什麼？", options: ["科技讓現代人輕鬆", "狩獵採集者工作時數遠少於現代人", "工作越多社會越進步", "自動化取消工作"], answer: 1 },
+      { question: "作者最想回答的問題是什麼？", options: ["提升生產力", "選到熱愛的工作", "朝九晚五是文化產物而非唯一解方", "人類天生喜歡累積財富"], answer: 2 },
+      { question: "最接近本書的核心概念是什麼？", options: ["狩獵採集／能量與熵／稀缺性", "生涯探索／斜槓", "KPI／時間管理", "領導力／企業文化"], answer: 0 }
     ]
   }
 ];
@@ -195,495 +66,133 @@ const state = {
 
 const app = document.querySelector("#app");
 
-function getSelectedBook() {
-  return books.find((book) => book.id === state.selectedBookId) || books[0];
-}
-
-function stopTimer() {
-  if (state.timerId) {
-    window.clearInterval(state.timerId);
-    state.timerId = null;
-  }
-}
-
-function setScreen(screen) {
-  stopTimer();
-  state.screen = screen;
-  render();
-}
-
-function resetGame() {
-  stopTimer();
-  state.screen = "home";
-  state.selectedBookId = null;
-  state.quizIndex = 0;
-  state.answers = [];
-  state.remainingSeconds = TOTAL_SECONDS;
-  state.userRating = 0;
-  state.globalStats = null;
-  render();
-}
-
-function chooseBook(bookId) {
-  state.selectedBookId = bookId;
-  state.quizIndex = 0;
-  state.answers = [];
-  state.remainingSeconds = TOTAL_SECONDS;
-  setScreen("ready");
-}
-
-function startTimer() {
-  state.remainingSeconds = TOTAL_SECONDS;
-  state.screen = "timer";
-  render();
-  state.timerId = window.setInterval(() => {
-    state.remainingSeconds -= 1;
-    updateTimerText();
-    if (state.remainingSeconds <= 0) {
-      stopTimer();
-      state.quizIndex = 0;
-      state.answers = [];
-      state.screen = "quiz";
-      render();
-    }
-  }, 1000);
-}
-
-function finishTimerNow() {
-  stopTimer();
-  state.remainingSeconds = 0;
-  state.quizIndex = 0;
-  state.answers = [];
-  state.screen = "quiz";
-  render();
-}
-
-function answerQuestion(optionIndex) {
-  const book = getSelectedBook();
-  const question = book.questions[state.quizIndex];
-  state.answers[state.quizIndex] = {
-    selected: optionIndex,
-    correct: question.answer
-  };
-
-  if (state.quizIndex < book.questions.length - 1) {
-    state.quizIndex += 1;
-    render();
-    return;
-  }
-
-  state.screen = "result";
-  render();
-}
+function getSelectedBook() { return books.find(b => b.id === state.selectedBookId) || books[0]; }
+function stopTimer() { if (state.timerId) { clearInterval(state.timerId); state.timerId = null; } }
+function setScreen(s) { stopTimer(); state.screen = s; render(); }
+function resetGame() { stopTimer(); Object.assign(state, { screen: "home", selectedBookId: null, quizIndex: 0, answers: [], remainingSeconds: TOTAL_SECONDS, userRating: 0, globalStats: null }); render(); }
 
 async function submitRating(rating) {
   state.userRating = rating;
   state.screen = "loading";
   render();
-
   try {
-    const response = await fetch("/api/rating", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId: state.selectedBookId, rating: rating })
-    });
-    const stats = await response.json();
-    state.globalStats = stats;
+    const res = await fetch("/api/rating", { method: "POST", body: JSON.stringify({ bookId: state.selectedBookId, rating }) });
+    state.globalStats = await res.json();
     state.screen = "stats";
-  } catch (err) {
-    console.error("Failed to submit rating", err);
-    // Fallback if API fails
-    state.screen = "stats";
-  }
+  } catch (e) { state.screen = "stats"; }
   render();
 }
 
 async function fetchStats() {
   try {
-    const response = await fetch("/api/rating");
-    state.globalStats = await response.json();
-    state.screen = "stats";
-    render();
-  } catch (err) {
-    console.error("Failed to fetch stats", err);
-    state.screen = "thanks";
-    render();
-  }
+    const res = await fetch("/api/rating");
+    state.globalStats = await res.json();
+    setScreen("stats");
+  } catch (e) { setScreen("thanks"); }
 }
 
-function formatTime(totalSeconds) {
-  const safeSeconds = Math.max(totalSeconds, 0);
-  const minutes = Math.floor(safeSeconds / 60);
-  const seconds = safeSeconds % 60;
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
-
-function updateTimerText() {
-  const timer = document.querySelector("[data-timer]");
-  if (timer) {
-    timer.textContent = formatTime(state.remainingSeconds);
-  }
-}
-
-function strategyList(compact = false) {
-  return `
-    <ul class="strategy-list${compact ? " compact" : ""}">
-      ${strategies
-        .map(
-          (item, index) => `
-            <li class="strategy-item">
-              <span class="strategy-number">${index + 1}</span>
-              <span class="strategy-text">
-                <strong>${item.title}</strong>
-                <span>${item.detail}</span>
-              </span>
-            </li>
-          `
-        )
-        .join("")}
-    </ul>
-  `;
-}
-
-function topbar(label, includeHome = true) {
-  return `
-    <div class="topbar">
-      <span class="step">${label}</span>
-      ${includeHome ? '<button class="quiet-button" data-action="home">回到第一頁</button>' : ""}
-    </div>
-  `;
+function topbar(label, home = true) {
+  return `<div class="topbar"><span class="step">${label}</span>${home ? '<button class="quiet-button" data-action="home">回到首頁</button>' : ""}</div>`;
 }
 
 function renderHome() {
-  app.innerHTML = `
-    <section class="screen home">
-      <div></div>
-      <div class="home-inner">
-        <div class="hero-copy">
-          <span class="badge">學習策略課程｜略讀策略單元</span>
-          <h1>略讀大挑戰</h1>
-          <p class="lead">這是學習策略課程的互動遊戲。你會先認識略讀一本書的方法，再用 1 分鐘挑戰抓出一本書的重點。</p>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="primary-button" data-action="strategy">開始挑戰</button>
-      </div>
-    </section>
-  `;
+  app.innerHTML = `<section class="screen home"><div></div><div class="home-inner"><div class="hero-copy"><span class="badge">學習策略課程</span><h1>略讀大挑戰</h1><p class="lead">用 1 分鐘挑戰抓出一本書的重點。</p></div></div><div class="actions"><button class="primary-button" data-action="strategy">開始挑戰</button></div></section>`;
 }
 
 function renderStrategy() {
-  app.innerHTML = `
-    <section class="screen">
-      ${topbar("第 2 頁／略讀策略")}
-      <div class="content strategy-layout">
-        <h2>快速理解一本書，可以先看這些地方</h2>
-        ${strategyList(false)}
-      </div>
-      <div class="actions">
-        <button class="primary-button" data-action="choose">我知道了，選一本書</button>
-      </div>
-    </section>
-  `;
+  app.innerHTML = `<section class="screen">${topbar("略讀策略")}<div class="content"><h2>快速理解一本書的地方</h2><div class="strategy-list">${strategies.map((s, i) => `<div class="strategy-item"><div class="strategy-number">${i+1}</div><div class="strategy-text"><strong>${s.title}</strong><span>${s.detail}</span></div></div>`).join("")}</div></div><div class="actions"><button class="primary-button" data-action="choose">選一本書</button></div></section>`;
 }
 
 function renderChoose() {
-  app.innerHTML = `
-    <section class="screen">
-      ${topbar("第 3 頁／選擇一本書")}
-      <div class="content choose-layout">
-        <h2>想挑戰哪一本？</h2>
-        <div class="book-grid">
-          ${books
-            .map(
-              (book) => `
-                <button class="book-button" data-book-id="${book.id}" aria-label="選擇 ${book.title}">
-                  <span class="book-image-wrap"><img src="${book.image}" alt="${book.title}封面" /></span>
-                  <span class="book-title">${book.title}</span>
-                </button>
-              `
-            )
-            .join("")}
-        </div>
-      </div>
-      <div class="actions">
-        <button class="quiet-button" data-action="strategy">回到策略</button>
-      </div>
-    </section>
-  `;
+  app.innerHTML = `<section class="screen">${topbar("選擇書本")}<div class="content"><h2>想挑戰哪一本？</h2><div class="book-grid">${books.map(b => `<button class="book-button" data-book-id="${b.id}"><div class="book-image-wrap"><img src="${b.image}"></div><div class="book-title">${b.title}</div></button>`).join("")}</div></div><div class="actions"><button class="quiet-button" data-action="strategy">回到策略</button></div></section>`;
 }
 
 function renderReady() {
-  const book = getSelectedBook();
-  app.innerHTML = `
-    <section class="screen">
-      ${topbar("第 4 頁／準備略讀")}
-      <div class="content ready-layout">
-        <div class="selected-cover">
-          <img src="${book.image}" alt="${book.title}封面" />
-        </div>
-        <div class="ready-copy">
-          <span class="time-chip">1 分鐘挑戰</span>
-          <h2>${book.title}</h2>
-          <p>請拿起旁邊的實體書。準備好之後按下開始，計時就會立刻啟動。</p>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="secondary-button" data-action="choose">換一本書</button>
-        <button class="primary-button" data-action="start">開始</button>
-      </div>
-    </section>
-  `;
+  const b = getSelectedBook();
+  app.innerHTML = `<section class="screen">${topbar("準備挑戰")}<div class="content"><h2>${b.title}</h2><p class="lead">請拿起實體書。準備好之後按下開始。</p></div><div class="actions"><button class="secondary-button" data-action="choose">換一本書</button><button class="primary-button" data-action="start">開始計時</button></div></section>`;
 }
 
 function renderTimer() {
-  const book = getSelectedBook();
-  app.innerHTML = `
-    <section class="screen">
-      ${topbar("第 5 頁／1 分鐘略讀中")}
-      <div class="content timer-layout">
-        <div class="timer-zone">
-          <span class="timer-label">剩餘時間</span>
-          <span class="timer-value" data-timer>${formatTime(state.remainingSeconds)}</span>
-          <span class="timer-book">${book.title}</span>
-        </div>
-        <div class="timer-strategy">
-          <h2>略讀時可以這樣看</h2>
-          ${strategyList(true)}
-        </div>
-      </div>
-      <div class="actions">
-        <button class="quiet-button" data-action="finish-timer">我看完了，進入測驗</button>
-      </div>
-    </section>
-  `;
+  const b = getSelectedBook();
+  app.innerHTML = `<section class="screen">${topbar("略讀中")}<div class="content"><h2>${b.title}</h2><div style="font-size: 80px; font-weight: 900; text-align: center; margin: 40px 0;" data-timer>${state.remainingSeconds}s</div></div><div class="actions"><button class="quiet-button" data-action="finish-timer">我讀完了</button></div></section>`;
 }
 
 function renderQuiz() {
-  const book = getSelectedBook();
-  const question = book.questions[state.quizIndex];
-  app.innerHTML = `
-    <section class="screen">
-      ${topbar("測驗階段")}
-      <div class="content quiz-layout">
-        <aside class="quiz-side">
-          <div class="mini-cover"><img src="${book.image}" alt="${book.title}封面" /></div>
-          <div class="progress">${state.quizIndex + 1} / ${book.questions.length}</div>
-        </aside>
-        <div class="question-panel">
-          <h2>${question.question}</h2>
-          ${question.prompt ? `<p class="prompt">${question.prompt}</p>` : ""}
-          <div class="options">
-            ${question.options
-              .map(
-                (option, index) => `
-                  <button class="option-button" data-option-index="${index}">
-                    <span class="option-letter">${String.fromCharCode(65 + index)}</span>
-                    <span class="option-text">${option}</span>
-                  </button>
-                `
-              )
-              .join("")}
-          </div>
-        </div>
-      </div>
-      <div></div>
-    </section>
-  `;
+  const b = getSelectedBook();
+  const q = b.questions[state.quizIndex];
+  app.innerHTML = `<section class="screen">${topbar("測驗")}<div class="content"><h2>${q.question}</h2><div class="options" style="display: grid; gap: 10px;">${q.options.map((o, i) => `<button class="option-button primary-button" style="text-align: left; background: #fff; color: #223233; border: 2px solid #eee;" data-option-index="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div></div></section>`;
 }
 
 function renderResult() {
-  const book = getSelectedBook();
-  const missed = book.questions
-    .map((question, index) => ({
-      question,
-      index,
-      selected: state.answers[index]?.selected,
-      correct: question.answer
-    }))
-    .filter((item) => item.selected !== item.correct);
-  const score = book.questions.length - missed.length;
-
-  app.innerHTML = `
-    <section class="screen">
-      ${topbar("挑戰結果", false)}
-      <div class="content result-layout">
-        <div class="score-band">
-          <div class="score-number">${score}/${book.questions.length}</div>
-          <div class="score-text">
-            <strong>${missed.length === 0 ? "全部答對" : "看看剛剛錯在哪裡"}</strong>
-            <span>${book.title} 的略讀挑戰完成。</span>
-          </div>
-        </div>
-        <div class="miss-list">
-          ${
-            missed.length === 0
-              ? '<div class="miss-item"><strong>恭喜！你精準抓到了這本書的核心方向。</strong><span>這代表你的略讀策略非常成功。</span></div>'
-              : missed
-                  .map(
-                    (item) => `
-                      <div class="miss-item">
-                        <strong>第 ${item.index + 1} 題：${item.question.question}</strong>
-                        <span>你的答案：${String.fromCharCode(65 + item.selected)}. ${
-                          item.question.options[item.selected]
-                        }</span>
-                        <span>正確答案：${String.fromCharCode(65 + item.correct)}. ${
-                          item.question.options[item.correct]
-                        }</span>
-                      </div>
-                    `
-                  )
-                  .join("")
-          }
-        </div>
-      </div>
-      <div class="actions">
-        <button class="primary-button" data-action="go-rating">下一步：填寫回饋</button>
-      </div>
-    </section>
-  `;
+  const b = getSelectedBook();
+  app.innerHTML = `<section class="screen">${topbar("結果", false)}<div class="content"><h2>完成挑戰！</h2><p class="lead">${b.title} 的略讀已結束。</p></div><div class="actions"><button class="primary-button" data-action="go-rating">下一步：填寫回饋</button></div></section>`;
 }
 
 function renderRating() {
-  const book = getSelectedBook();
-  app.innerHTML = `
-    <section class="screen rating">
-      ${topbar("讀後回饋", false)}
-      <div class="content rating-layout">
-        <div class="rating-header">
-          <h2>這本書對你的吸引力？</h2>
-          <p class="lead">經過剛剛的略讀與挑戰，你會想深入閱讀這本書嗎？</p>
-        </div>
-        <div class="rating-box">
-          <div class="selected-book-name">${book.title}</div>
-          <div class="stars">
-            <button class="star-btn" data-value="1">★</button>
-            <button class="star-btn" data-value="2">★</button>
-            <button class="star-btn" data-value="3">★</button>
-            <button class="star-btn" data-value="4">★</button>
-            <button class="star-btn" data-value="5">★</button>
-          </div>
-          <div class="rating-label">請點擊星星評分</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="quiet-button" data-action="go-stats">跳過並看統計</button>
-      </div>
-    </section>
-  `;
+  const b = getSelectedBook();
+  app.innerHTML = `<section class="screen rating">${topbar("讀後回饋", false)}<div class="content"><div class="rating-box"><h2>${b.title}</h2><p>這本書對你有吸引力嗎？</p><div class="stars">${[1,2,3,4,5].map(v => `<button class="star-btn" data-value="${v}">★</button>`).join("")}</div></div></div><div class="actions"><button class="quiet-button" data-action="go-stats">看大家推薦什麼</button></div></section>`;
+  
+  const stars = app.querySelectorAll(".star-btn");
+  stars.forEach(btn => {
+    btn.onclick = () => submitRating(Number(btn.dataset.value));
+    btn.onmouseover = () => {
+      const v = Number(btn.dataset.value);
+      stars.forEach(s => s.classList.toggle("active", Number(s.dataset.value) <= v));
+    };
+    btn.onmouseout = () => stars.forEach(s => s.classList.remove("active"));
+  });
 }
 
 function renderStats() {
-  const stats = state.globalStats || [];
-  app.innerHTML = `
-    <section class="screen stats">
-      ${topbar("大家最想看的書", false)}
-      <div class="content stats-layout">
-        <h2>展覽現場讀者推薦榜</h2>
-        <p class="lead">這是目前所有參展者對於四本書的平均推薦分數</p>
-        <div class="stats-grid">
-          ${books.map(book => {
-            const stat = stats.find(s => s.bookId === book.id) || { avgRating: 0, count: 0 };
-            const percent = (stat.avgRating / 5) * 100;
-            return `
-              <div class="stat-row">
-                <div class="stat-info">
-                  <span class="stat-book-title">${book.title}</span>
-                  <span class="stat-value">${Number(stat.avgRating).toFixed(1)} ★ (${stat.count} 人評分)</span>
-                </div>
-                <div class="stat-bar-bg">
-                  <div class="stat-bar-fill" style="width: ${percent}%"></div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-      <div class="actions">
-        <button class="primary-button" data-action="thanks">完成並離開</button>
-      </div>
-    </section>
-  `;
+  const s = state.globalStats || [];
+  app.innerHTML = `<section class="screen stats">${topbar("推薦排行榜", false)}<div class="content"><h2>讀者推薦榜</h2><div class="stats-grid">${books.map(b => {
+    const st = s.find(x => x.bookId === b.id) || { avgRating: 0, count: 0 };
+    return `<div class="stat-row"><div class="stat-info"><span>${b.title}</span><span>${st.count > 0 ? Number(st.avgRating).toFixed(1) + "★" : "尚無評分"}</span></div><div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${(st.avgRating/5)*100}%"></div></div></div>`;
+  }).join("")}</div></div><div class="actions"><button class="primary-button" data-action="thanks">完成</button></div></section>`;
 }
 
-function renderLoading() {
-  app.innerHTML = `
-    <section class="screen loading">
-      <div class="content">
-        <div class="loader">正在記錄您的回饋並計算統計數據...</div>
-      </div>
-    </section>
-  `;
-}
-
-function renderThanks() {
-  app.innerHTML = `
-    <section class="screen thanks">
-      <div></div>
-      <div class="home-inner">
-        <div class="hero-copy">
-          <span class="badge">感謝參與</span>
-          <h1>謝謝您的參與！</h1>
-          <p class="lead">掌握略讀技巧，是開啟高效學習的第一步。<br>希望這次的體驗，能幫助您在未來的閱讀中更精準地捕捉智慧。<br>祝您學習愉快！</p>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="primary-button" data-action="home">回到第一頁</button>
-      </div>
-    </section>
-  `;
-}
+function renderLoading() { app.innerHTML = `<div class="screen"><h2>處理中...</h2></div>`; }
+function renderThanks() { app.innerHTML = `<section class="screen thanks"><div></div><div class="home-inner"><h1>謝謝參與！</h1><p class="lead">祝您學習愉快！</p></div><div class="actions"><button class="primary-button" data-action="home">回到首頁</button></div></section>`; }
 
 function render() {
-  if (state.screen === "home") renderHome();
-  if (state.screen === "strategy") renderStrategy();
-  if (state.screen === "choose") renderChoose();
-  if (state.screen === "ready") renderReady();
-  if (state.screen === "timer") renderTimer();
-  if (state.screen === "quiz") renderQuiz();
-  if (state.screen === "result") renderResult();
-  if (state.screen === "rating") renderRating();
-  if (state.screen === "stats") renderStats();
-  if (state.screen === "loading") renderLoading();
-  if (state.screen === "thanks") renderThanks();
+  const s = state.screen;
+  if (s === "home") renderHome();
+  else if (s === "strategy") renderStrategy();
+  else if (s === "choose") renderChoose();
+  else if (s === "ready") renderReady();
+  else if (s === "timer") renderTimer();
+  else if (s === "quiz") renderQuiz();
+  else if (s === "result") renderResult();
+  else if (s === "rating") renderRating();
+  else if (s === "stats") renderStats();
+  else if (s === "loading") renderLoading();
+  else if (s === "thanks") renderThanks();
 }
 
-app.addEventListener("click", (event) => {
-  const bookButton = event.target.closest("[data-book-id]");
-  if (bookButton) {
-    chooseBook(bookButton.dataset.bookId);
-    return;
+app.addEventListener("click", e => {
+  const b = e.target.closest("[data-book-id]"); if (b) { state.selectedBookId = b.dataset.bookId; setScreen("ready"); return; }
+  const o = e.target.closest("[data-option-index]"); if (o) { 
+    state.answers.push(Number(o.dataset.optionIndex)); 
+    if (state.quizIndex < getSelectedBook().questions.length - 1) { state.quizIndex++; render(); } else { setScreen("result"); }
+    return; 
   }
-
-  const optionButton = event.target.closest("[data-option-index]");
-  if (optionButton) {
-    answerQuestion(Number(optionButton.dataset.optionIndex));
-    return;
+  const a = e.target.closest("[data-action]"); if (!a) return;
+  const act = a.dataset.action;
+  if (act === "home") resetGame();
+  else if (act === "strategy") setScreen("strategy");
+  else if (act === "choose") setScreen("choose");
+  else if (act === "start") {
+    state.screen = "timer"; render();
+    state.timerId = setInterval(() => {
+      state.remainingSeconds--;
+      const t = app.querySelector("[data-timer]"); if (t) t.textContent = state.remainingSeconds + "s";
+      if (state.remainingSeconds <= 0) { stopTimer(); setScreen("quiz"); }
+    }, 1000);
   }
-
-  const starBtn = event.target.closest(".star-btn");
-  if (starBtn) {
-    submitRating(Number(starBtn.dataset.value));
-    return;
-  }
-
-  const actionButton = event.target.closest("[data-action]");
-  if (!actionButton) return;
-
-  const action = actionButton.dataset.action;
-  if (action === "home") resetGame();
-  if (action === "strategy") setScreen("strategy");
-  if (action === "choose") setScreen("choose");
-  if (action === "start") startTimer();
-  if (action === "finish-timer") finishTimerNow();
-  if (action === "go-rating") setScreen("rating");
-  if (action === "go-stats") fetchStats();
-  if (action === "thanks") setScreen("thanks");
+  else if (act === "finish-timer") { stopTimer(); setScreen("quiz"); }
+  else if (act === "go-rating") setScreen("rating");
+  else if (act === "go-stats") fetchStats();
+  else if (act === "thanks") setScreen("thanks");
 });
 
 render();
-
-window.__skimmingChallengeTest = {
-  finishTimerNow,
-  getState: () => ({ ...state })
-};
