@@ -1,7 +1,7 @@
 "use strict";
 
 // Build Trigger: 2026-05-28 15:40
-const TOTAL_SECONDS = 120;
+const TOTAL_SECONDS = 60;
 const strategies = [
   {
     title: "看書名",
@@ -384,7 +384,7 @@ function renderReady() {
           <img src="${book.image}" alt="${book.title}封面" />
         </div>
         <div class="ready-copy">
-          <span class="time-chip">2 分鐘挑戰</span>
+          <span class="time-chip">1 分鐘挑戰</span>
           <h2>${book.title}</h2>
           <p>請拿起旁邊的實體書。準備好之後按下開始，計時就會立刻啟動。</p>
         </div>
