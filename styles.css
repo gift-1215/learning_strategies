@@ -59,21 +59,32 @@ button {
 
 .home {
   grid-template-columns: minmax(0, 1fr);
-  background:
-    linear-gradient(90deg, rgba(0, 117, 111, 0.1) 0 48%, transparent 48%),
-    var(--paper);
+  background: var(--paper);
 }
 
 .home-inner {
+  width: min(1050px, 100%);
+  margin: 0 auto;
   align-self: center;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
+  justify-items: center;
   gap: 28px;
+  text-align: center;
 }
 
 .hero-copy {
   max-width: 920px;
+}
+
+.home .lead {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.home .actions {
+  justify-content: center;
 }
 
 .badge {
