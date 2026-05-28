@@ -1,6 +1,6 @@
 "use strict";
 
-const TOTAL_SECONDS = 120;
+const TOTAL_SECONDS = 60;
 const strategies = [
   {
     title: "看書名",
@@ -322,7 +322,7 @@ function renderHome() {
         <div class="hero-copy">
           <span class="badge">學習策略課程｜略讀策略單元</span>
           <h1>略讀大挑戰</h1>
-          <p class="lead">這是學習策略課程的互動遊戲。你會先認識略讀一本書的方法，再用 2 分鐘挑戰抓出一本書的重點。</p>
+          <p class="lead">這是學習策略課程的互動遊戲。你會先認識略讀一本書的方法，再用 1 分鐘挑戰抓出一本書的重點。</p>
         </div>
       </div>
       <div class="actions">
@@ -400,7 +400,7 @@ function renderTimer() {
   const book = getSelectedBook();
   app.innerHTML = `
     <section class="screen">
-      ${topbar("第 5 頁／2 分鐘略讀中")}
+      ${topbar("第 5 頁／1 分鐘略讀中")}
       <div class="content timer-layout">
         <div class="timer-zone">
           <span class="timer-label">剩餘時間</span>
