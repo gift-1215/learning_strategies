@@ -1,6 +1,4 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "learning-strategies",
   "pages_build_output_dir": ".",
   "d1_databases": [
     {
@@ -9,5 +7,5 @@
       "database_id": "925ac8f4-d083-15c2-720a-47f1810e2ae0" 
     }
   ],
-  "compatibility_date": "2026-05-28"
+  "compatibility_date": "2024-05-28"
 }
