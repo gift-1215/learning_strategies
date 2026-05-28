@@ -1,6 +1,7 @@
 "use strict";
 
-const TOTAL_SECONDS = 60;
+// Build Trigger: 2026-05-28 15:40
+const TOTAL_SECONDS = 120;
 const strategies = [
   {
     title: "看書名",
