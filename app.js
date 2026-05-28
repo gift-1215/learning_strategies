@@ -466,7 +466,7 @@ function renderResult() {
 
   app.innerHTML = `
     <section class="screen">
-      ${topbar("最後一頁／挑戰結果", false)}
+      ${topbar("挑戰結果", false)}
       <div class="content result-layout">
         <div class="score-band">
           <div class="score-number">${score}/${book.questions.length}</div>
@@ -478,7 +478,7 @@ function renderResult() {
         <div class="miss-list">
           ${
             missed.length === 0
-              ? '<div class="miss-item"><strong>你抓到這本書的核心方向。</strong><span>可以回到第一頁，換下一位參展者挑戰。</span></div>'
+              ? '<div class="miss-item"><strong>恭喜！你精準抓到了這本書的核心方向。</strong><span>這代表你的略讀策略非常成功。</span></div>'
               : missed
                   .map(
                     (item) => `
@@ -498,6 +498,24 @@ function renderResult() {
         </div>
       </div>
       <div class="actions">
+        <button class="primary-button" data-action="thanks">完成挑戰</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderThanks() {
+  app.innerHTML = `
+    <section class="screen thanks">
+      <div></div>
+      <div class="home-inner">
+        <div class="hero-copy">
+          <span class="badge">感謝參與</span>
+          <h1>謝謝您的參與！</h1>
+          <p class="lead">掌握略讀技巧，是開啟高效學習的第一步。<br>希望這次的體驗，能幫助您在未來的閱讀中更精準地捕捉智慧。<br>祝您學習愉快！</p>
+        </div>
+      </div>
+      <div class="actions">
         <button class="primary-button" data-action="home">回到第一頁</button>
       </div>
     </section>
@@ -512,6 +530,7 @@ function render() {
   if (state.screen === "timer") renderTimer();
   if (state.screen === "quiz") renderQuiz();
   if (state.screen === "result") renderResult();
+  if (state.screen === "thanks") renderThanks();
 }
 
 app.addEventListener("click", (event) => {
@@ -536,6 +555,7 @@ app.addEventListener("click", (event) => {
   if (action === "choose") setScreen("choose");
   if (action === "start") startTimer();
   if (action === "finish-timer") finishTimerNow();
+  if (action === "thanks") setScreen("thanks");
 });
 
 render();
