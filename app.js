@@ -1,6 +1,6 @@
 "use strict";
 
-// Build Trigger: 2026-05-28 15:40
+// Build Trigger: 2026-05-28 15:55
 const TOTAL_SECONDS = 60;
 const strategies = [
   {
@@ -188,7 +188,9 @@ const state = {
   quizIndex: 0,
   answers: [],
   timerId: null,
-  remainingSeconds: TOTAL_SECONDS
+  remainingSeconds: TOTAL_SECONDS,
+  userRating: 0,
+  globalStats: null
 };
 
 const app = document.querySelector("#app");
@@ -217,6 +219,8 @@ function resetGame() {
   state.quizIndex = 0;
   state.answers = [];
   state.remainingSeconds = TOTAL_SECONDS;
+  state.userRating = 0;
+  state.globalStats = null;
   render();
 }
 
@@ -270,6 +274,41 @@ function answerQuestion(optionIndex) {
 
   state.screen = "result";
   render();
+}
+
+async function submitRating(rating) {
+  state.userRating = rating;
+  state.screen = "loading";
+  render();
+
+  try {
+    const response = await fetch("/api/rating", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId: state.selectedBookId, rating: rating })
+    });
+    const stats = await response.json();
+    state.globalStats = stats;
+    state.screen = "stats";
+  } catch (err) {
+    console.error("Failed to submit rating", err);
+    // Fallback if API fails
+    state.screen = "stats";
+  }
+  render();
+}
+
+async function fetchStats() {
+  try {
+    const response = await fetch("/api/rating");
+    state.globalStats = await response.json();
+    state.screen = "stats";
+    render();
+  } catch (err) {
+    console.error("Failed to fetch stats", err);
+    state.screen = "thanks";
+    render();
+  }
 }
 
 function formatTime(totalSeconds) {
@@ -499,7 +538,79 @@ function renderResult() {
         </div>
       </div>
       <div class="actions">
-        <button class="primary-button" data-action="thanks">完成挑戰</button>
+        <button class="primary-button" data-action="go-rating">下一步：填寫回饋</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderRating() {
+  const book = getSelectedBook();
+  app.innerHTML = `
+    <section class="screen rating">
+      ${topbar("讀後回饋", false)}
+      <div class="content rating-layout">
+        <div class="rating-header">
+          <h2>這本書對你的吸引力？</h2>
+          <p class="lead">經過剛剛的略讀與挑戰，你會想深入閱讀這本書嗎？</p>
+        </div>
+        <div class="rating-box">
+          <div class="selected-book-name">${book.title}</div>
+          <div class="stars">
+            <button class="star-btn" data-value="1">★</button>
+            <button class="star-btn" data-value="2">★</button>
+            <button class="star-btn" data-value="3">★</button>
+            <button class="star-btn" data-value="4">★</button>
+            <button class="star-btn" data-value="5">★</button>
+          </div>
+          <div class="rating-label">請點擊星星評分</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="quiet-button" data-action="go-stats">跳過並看統計</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderStats() {
+  const stats = state.globalStats || [];
+  app.innerHTML = `
+    <section class="screen stats">
+      ${topbar("大家最想看的書", false)}
+      <div class="content stats-layout">
+        <h2>展覽現場讀者推薦榜</h2>
+        <p class="lead">這是目前所有參展者對於四本書的平均推薦分數</p>
+        <div class="stats-grid">
+          ${books.map(book => {
+            const stat = stats.find(s => s.bookId === book.id) || { avgRating: 0, count: 0 };
+            const percent = (stat.avgRating / 5) * 100;
+            return `
+              <div class="stat-row">
+                <div class="stat-info">
+                  <span class="stat-book-title">${book.title}</span>
+                  <span class="stat-value">${Number(stat.avgRating).toFixed(1)} ★ (${stat.count} 人評分)</span>
+                </div>
+                <div class="stat-bar-bg">
+                  <div class="stat-bar-fill" style="width: ${percent}%"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary-button" data-action="thanks">完成並離開</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderLoading() {
+  app.innerHTML = `
+    <section class="screen loading">
+      <div class="content">
+        <div class="loader">正在記錄您的回饋並計算統計數據...</div>
       </div>
     </section>
   `;
@@ -531,6 +642,9 @@ function render() {
   if (state.screen === "timer") renderTimer();
   if (state.screen === "quiz") renderQuiz();
   if (state.screen === "result") renderResult();
+  if (state.screen === "rating") renderRating();
+  if (state.screen === "stats") renderStats();
+  if (state.screen === "loading") renderLoading();
   if (state.screen === "thanks") renderThanks();
 }
 
@@ -547,6 +661,12 @@ app.addEventListener("click", (event) => {
     return;
   }
 
+  const starBtn = event.target.closest(".star-btn");
+  if (starBtn) {
+    submitRating(Number(starBtn.dataset.value));
+    return;
+  }
+
   const actionButton = event.target.closest("[data-action]");
   if (!actionButton) return;
 
@@ -556,6 +676,8 @@ app.addEventListener("click", (event) => {
   if (action === "choose") setScreen("choose");
   if (action === "start") startTimer();
   if (action === "finish-timer") finishTimerNow();
+  if (action === "go-rating") setScreen("rating");
+  if (action === "go-stats") fetchStats();
   if (action === "thanks") setScreen("thanks");
 });
 
