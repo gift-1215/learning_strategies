@@ -74,24 +74,49 @@ function resetGame() {
   state = { screen: "home", selectedBookId: null, quizIndex: 0, answers: [], remainingSeconds: TOTAL_SECONDS, userRating: 0, globalStats: null }; 
   render(); 
 }
-
 async function submitRating(rating) {
   state.userRating = rating;
   state.screen = "loading";
   render();
   try {
-    const res = await fetch("/api/rating", { method: "POST", body: JSON.stringify({ bookId: state.selectedBookId, rating }) });
+    const res = await fetch("/api/rating", { 
+      method: "POST", 
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId: state.selectedBookId, rating }) 
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      alert("API 錯誤: " + (errData.error || "未知錯誤"));
+      state.screen = "stats";
+      render();
+      return;
+    }
+
     state.globalStats = await res.json();
-    setScreen("stats");
-  } catch (e) { setScreen("stats"); }
+    state.screen = "stats";
+  } catch (e) { 
+    alert("連線失敗: " + e.message);
+    state.screen = "stats"; 
+  }
+  render();
 }
 
 async function fetchStats() {
   try {
     const res = await fetch("/api/rating");
+    if (!res.ok) {
+      const errData = await res.json();
+      console.error("Fetch stats error:", errData);
+      setScreen("stats");
+      return;
+    }
     state.globalStats = await res.json();
     setScreen("stats");
-  } catch (e) { setScreen("thanks"); }
+  } catch (e) { 
+    console.error("Fetch stats failed:", e);
+    setScreen("thanks"); 
+  }
 }
 
 function topbar(label, home = true) {
