@@ -105,7 +105,7 @@ function renderHome() {
         <div class="hero-copy">
           <span class="badge">學習策略課程｜略讀策略單元</span>
           <h1>略讀大挑戰</h1>
-          <p class="lead">你會先認識略讀一本書的方法，再用 1 分鐘挑戰抓出一本書的重點。</p>
+          <p class="lead">你會先認識略讀一本書的方法，<br/>再用 1 分鐘挑戰抓出一本書的重點。</p>
         </div>
       </div>
       <div class="actions">
@@ -185,13 +185,27 @@ function renderTimer() {
   app.innerHTML = `
     <section class="screen">
       ${topbar("1 分鐘略讀中")}
-      <div class="content" style="text-align: center;">
-        <div class="mini-cover" style="max-width: 200px; margin: 0 auto 20px;"><img src="${b.image}"></div>
-        <h2 style="margin-bottom: 10px;">${b.title}</h2>
-        <div style="font-size: 100px; font-weight: 950; color: var(--teal-dark);" data-timer>${state.remainingSeconds}s</div>
+      <div class="content timer-layout">
+        <div class="timer-zone">
+          <div class="mini-cover" style="max-width: 180px; margin: 0 auto 15px;"><img src="${b.image}"></div>
+          <h2 style="margin-bottom: 5px;">${b.title}</h2>
+          <div class="timer-display" data-timer>${state.remainingSeconds}s</div>
+          <p style="color: var(--muted); font-weight: 800;">請翻閱實體書</p>
+        </div>
+        <div class="timer-strategy">
+          <h3 style="margin-top: 0;">略讀策略提示</h3>
+          <div class="strategy-list compact">
+            ${strategies.map((s, i) => `
+              <div class="strategy-item compact">
+                <div class="strategy-number">${i+1}</div>
+                <div class="strategy-text"><strong>${s.title}</strong></div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
       </div>
       <div class="actions">
-        <button class="quiet-button" data-action="finish-timer">我讀完了，進入測驗</button>
+        <button class="quiet-button" data-action="finish-timer">我看完了，進入測驗</button>
       </div>
     </section>
   `;

@@ -213,6 +213,58 @@ h2 { font-size: clamp(32px, 5vw, 46px); line-height: 1.08; margin-bottom: 24px; 
 .stat-bar-bg { height: 24px; background: var(--mint); border-radius: 12px; overflow: hidden; }
 .stat-bar-fill { height: 100%; background: var(--teal); transition: width 1s ease-out; }
 
+/* 計時頁面佈局 */
+.timer-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.timer-zone {
+  text-align: center;
+  background: var(--panel);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.timer-display {
+  font-size: clamp(80px, 10vw, 120px);
+  font-weight: 950;
+  color: var(--teal-dark);
+  line-height: 1;
+  margin: 10px 0;
+}
+
+.strategy-list.compact {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.strategy-item.compact {
+  padding: 10px 15px;
+  border-left-width: 4px;
+}
+
+.strategy-item.compact .strategy-number {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+
+.strategy-item.compact .strategy-text strong {
+  font-size: 17px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .timer-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
 /* 響應式：平板小螢幕與手機 */
 @media (max-width: 900px) {
   .book-grid { grid-template-columns: repeat(2, 1fr); }
