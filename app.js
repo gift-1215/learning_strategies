@@ -76,36 +76,55 @@ function resetGame() {
 }
 // Build Trigger: 2026-05-28 16:30 (Binding Fix Test)
 
+// 確保您看到這行，代表程式碼已更新：V100-STABLE
+console.log("App loaded: V100-STABLE");
+
 async function submitRating(rating) {
+  if (!state.selectedBookId) {
+    alert("錯誤：未選擇書本，無法評分");
+    return;
+  }
+
   state.userRating = rating;
   state.screen = "loading";
   render();
   
+  // 使用絕對路徑確保瀏覽器不會報 pattern 錯誤
+  const url = `${window.location.origin}/api/rating`;
+  
   try {
-    const res = await fetch("/api/rating", { 
+    const res = await fetch(url, { 
       method: "POST", 
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId: state.selectedBookId, rating: Number(rating) }) 
+      headers: { 
+        "Accept": "application/json",
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify({ 
+        bookId: String(state.selectedBookId), 
+        rating: Number(rating) 
+      }) 
     });
 
-    const contentType = res.headers.get("content-type");
-    if (!res.ok) {
-      if (contentType && contentType.includes("application/json")) {
-        const errData = await res.json();
-        alert(`API 錯誤 (${res.status}): ${errData.error || ""} - ${errData.msg || ""}`);
-      } else {
-        const rawError = await res.text();
-        alert(`系統嚴重錯誤 (${res.status}): ${rawError.slice(0, 200)}...`);
-      }
+    const text = await res.text(); // 先讀取成文字，避免 JSON 解析失敗
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      alert(`伺服器回傳格式非 JSON (${res.status}): ${text.slice(0, 100)}`);
       state.screen = "stats";
       render();
       return;
     }
 
-    state.globalStats = await res.json();
-    state.screen = "stats";
+    if (!res.ok) {
+      alert(`API 錯誤 (${res.status}): ${data.error || "未知錯誤"} - ${data.msg || ""}`);
+      state.screen = "stats";
+    } else {
+      state.globalStats = data;
+      state.screen = "stats";
+    }
   } catch (e) { 
-    alert("瀏覽器連線異常: " + e.message);
+    alert("網路連線診斷: " + e.message + "\nURL: " + url);
     state.screen = "stats"; 
   }
   render();
