@@ -375,7 +375,7 @@ function renderStats() {
         </div>
       </div>
       <div class="actions">
-        <button class="primary-button" data-action="thanks">查看致謝</button>
+        <button class="primary-button" data-action="thanks">完成</button>
       </div>
     </section>
   `;
@@ -387,9 +387,8 @@ function renderThanks() {
   app.innerHTML = `
     <section class="screen thanks">
       <div class="content" style="text-align: center;">
-        <span class="badge">感謝參與</span>
         <h1>謝謝您的參與！</h1>
-        <p class="lead">希望這次的體驗，能幫助您在未來的閱讀中更精準地捕捉智慧。<br>祝您學習愉快！</p>
+        <p class="lead">希望這次的體驗，<br>能幫助您在未來的閱讀中更精準地捕捉智慧。<br>祝您學習愉快！</p>
       </div>
       <div class="actions">
         <button class="primary-button" data-action="home">回到第一頁</button>
