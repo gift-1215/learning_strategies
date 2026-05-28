@@ -74,20 +74,25 @@ function resetGame() {
   state = { screen: "home", selectedBookId: null, quizIndex: 0, answers: [], remainingSeconds: TOTAL_SECONDS, userRating: 0, globalStats: null }; 
   render(); 
 }
+// Build Trigger: 2026-05-28 16:30 (Binding Fix Test)
+
 async function submitRating(rating) {
   state.userRating = rating;
   state.screen = "loading";
   render();
+  
+  const apiEndpoint = window.location.origin + "/api/rating";
+  
   try {
-    const res = await fetch("/api/rating", { 
+    const res = await fetch(apiEndpoint, { 
       method: "POST", 
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId: state.selectedBookId, rating }) 
+      body: JSON.stringify({ bookId: state.selectedBookId, rating: Number(rating) }) 
     });
 
     if (!res.ok) {
       const errData = await res.json();
-      alert("API 錯誤: " + (errData.error || "未知錯誤"));
+      alert(`API 錯誤 (${res.status}): ${errData.error || ""} - ${errData.msg || ""}`);
       state.screen = "stats";
       render();
       return;
@@ -96,25 +101,24 @@ async function submitRating(rating) {
     state.globalStats = await res.json();
     state.screen = "stats";
   } catch (e) { 
-    alert("連線失敗: " + e.message);
+    alert("系統連線異常: " + e.message);
     state.screen = "stats"; 
   }
   render();
 }
 
 async function fetchStats() {
+  const apiEndpoint = window.location.origin + "/api/rating";
   try {
-    const res = await fetch("/api/rating");
+    const res = await fetch(apiEndpoint);
     if (!res.ok) {
-      const errData = await res.json();
-      console.error("Fetch stats error:", errData);
       setScreen("stats");
       return;
     }
     state.globalStats = await res.json();
     setScreen("stats");
   } catch (e) { 
-    console.error("Fetch stats failed:", e);
+    console.error("Stats fetch failed", e);
     setScreen("thanks"); 
   }
 }

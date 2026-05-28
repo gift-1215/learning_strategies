@@ -1,59 +1,34 @@
-export async function onRequestGet(context) {
+export async function onRequest(context) {
+  const { request, env } = context;
+  const { DB } = env;
+
+  if (!DB) {
+    return new Response(JSON.stringify({ error: "DB_BINDING_MISSING" }), { status: 500 });
+  }
+
+  // 確保資料表存在
   try {
-    const { DB } = context.env;
-    
-    if (!DB) {
-      return new Response(JSON.stringify({ error: "D1 binding 'DB' not found in environment." }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      });
+    await DB.prepare("CREATE TABLE IF NOT EXISTS ratings (id INTEGER PRIMARY KEY, bookId TEXT, rating INTEGER, ts DATETIME DEFAULT CURRENT_TIMESTAMP)").run();
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "INIT_TABLE_FAILED", msg: e.message }), { status: 500 });
+  }
+
+  if (request.method === "POST") {
+    try {
+      const { bookId, rating } = await request.json();
+      await DB.prepare("INSERT INTO ratings (bookId, rating) VALUES (?, ?)").bind(bookId, rating).run();
+    } catch (e) {
+      return new Response(JSON.stringify({ error: "POST_FAILED", msg: e.message }), { status: 500 });
     }
+  }
 
-    // 建立資料表（如果不存在）
-    await DB.prepare(`
-      CREATE TABLE IF NOT EXISTS ratings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        bookId TEXT NOT NULL,
-        rating INTEGER NOT NULL,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `).run();
-
-    // 取得統計數據
-    const { results } = await DB.prepare(`
-      SELECT bookId, AVG(rating) as avgRating, COUNT(*) as count 
-      FROM ratings 
-      GROUP BY bookId
-    `).all();
-
+  // GET 與 POST 之後都回傳統計
+  try {
+    const { results } = await DB.prepare("SELECT bookId, AVG(rating) as avgRating, COUNT(*) as count FROM ratings GROUP BY bookId").all();
     return new Response(JSON.stringify(results || []), {
       headers: { "Content-Type": "application/json" }
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message, stack: err.stack }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-}
-
-export async function onRequestPost(context) {
-  try {
-    const { DB } = context.env;
-    const { bookId, rating } = await context.request.json();
-
-    if (!DB) {
-      return new Response(JSON.stringify({ error: "D1 binding 'DB' not found" }), { status: 500 });
-    }
-
-    // 存入分數
-    await DB.prepare("INSERT INTO ratings (bookId, rating) VALUES (?, ?)")
-      .bind(bookId, rating)
-      .run();
-
-    // 呼叫 Get 邏輯回傳最新數據
-    return onRequestGet(context);
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "GET_STATS_FAILED", msg: e.message }), { status: 500 });
   }
 }
