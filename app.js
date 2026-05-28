@@ -81,18 +81,22 @@ async function submitRating(rating) {
   state.screen = "loading";
   render();
   
-  const apiEndpoint = window.location.origin + "/api/rating";
-  
   try {
-    const res = await fetch(apiEndpoint, { 
+    const res = await fetch("/api/rating", { 
       method: "POST", 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bookId: state.selectedBookId, rating: Number(rating) }) 
     });
 
+    const contentType = res.headers.get("content-type");
     if (!res.ok) {
-      const errData = await res.json();
-      alert(`API 錯誤 (${res.status}): ${errData.error || ""} - ${errData.msg || ""}`);
+      if (contentType && contentType.includes("application/json")) {
+        const errData = await res.json();
+        alert(`API 錯誤 (${res.status}): ${errData.error || ""} - ${errData.msg || ""}`);
+      } else {
+        const rawError = await res.text();
+        alert(`系統嚴重錯誤 (${res.status}): ${rawError.slice(0, 200)}...`);
+      }
       state.screen = "stats";
       render();
       return;
@@ -101,7 +105,7 @@ async function submitRating(rating) {
     state.globalStats = await res.json();
     state.screen = "stats";
   } catch (e) { 
-    alert("系統連線異常: " + e.message);
+    alert("瀏覽器連線異常: " + e.message);
     state.screen = "stats"; 
   }
   render();
