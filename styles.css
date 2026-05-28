@@ -12,40 +12,30 @@
   --shadow: 0 18px 42px rgba(21, 41, 38, 0.12);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   width: 100%;
   margin: 0;
+  padding: 0;
   background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", sans-serif;
 }
 
 body {
-  color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC",
-    "Microsoft JhengHei", sans-serif;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-button {
-  font: inherit;
-}
+.app { flex: 1; display: flex; flex-direction: column; }
 
-.app {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
+/* 基礎 Screen 設定 */
 .screen {
   position: relative;
   min-height: 100dvh;
-  padding: 20px;
+  padding: clamp(20px, 4vw, 56px);
   display: flex;
   flex-direction: column;
 }
@@ -54,81 +44,98 @@ button {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: clamp(12px, 1.3vw, 22px);
+  width: clamp(10px, 1.2vw, 20px);
   background: var(--teal);
 }
 
+/* 內容區塊 */
 .content {
   flex: 1 0 auto;
-  width: min(1000px, 100%);
+  width: min(1180px, 100%);
   margin: 0 auto;
-  padding-bottom: 80px;
+  padding-bottom: 120px; /* 預留給 Sticky Footer 的空間 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+/* --- Sticky Footer 解決方案 --- */
 .actions {
   position: sticky;
   bottom: 0;
-  z-index: 100;
+  z-index: 1000;
   background: var(--paper);
-  padding: 15px 20px 25px 20px;
+  padding: 20px 40px 40px 40px;
   border-top: 1px solid var(--line);
   display: flex;
   justify-content: flex-end;
   gap: 14px;
-  margin: 0 -20px -20px -20px;
-  box-shadow: 0 -10px 20px rgba(0,0,0,0.03);
+  margin: 0 -56px -56px -56px; /* 貼齊螢幕邊緣 */
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
 }
 
+/* 首頁不使用 Sticky，保持大氣 */
 .home .actions {
   position: relative;
   background: transparent;
   border: 0;
   box-shadow: none;
   justify-content: center;
+  padding: 0;
+  margin: 40px 0 0 0;
 }
 
-/* Typography & Components */
-h1 { font-size: clamp(48px, 10vw, 96px); line-height: 0.95; margin: 28px 0; text-align: center; }
-h2 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; margin-bottom: 20px; }
-.lead { color: var(--muted); font-size: clamp(18px, 3vw, 28px); line-height: 1.4; font-weight: 700; margin-bottom: 30px; }
+.home .content {
+  padding-bottom: 0;
+  text-align: center;
+}
+
+/* 文字樣式回歸 */
+h1 { font-size: clamp(56px, 10vw, 96px); line-height: 0.95; margin: 28px 0; font-weight: 950; }
+h2 { font-size: clamp(32px, 5vw, 46px); line-height: 1.08; margin-bottom: 24px; font-weight: 900; }
+.lead { color: var(--muted); font-size: clamp(20px, 3vw, 31px); line-height: 1.42; font-weight: 700; max-width: 800px; margin: 0 auto 30px; }
 
 .badge {
   display: inline-flex;
-  padding: 8px 18px;
+  padding: 10px 20px;
   border: 2px solid var(--teal);
   color: var(--teal-dark);
   background: var(--mint);
   border-radius: 999px;
-  font-size: 18px;
+  font-size: clamp(16px, 2vw, 22px);
   font-weight: 800;
+  margin-bottom: 10px;
 }
 
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.step { color: var(--teal-dark); font-size: 18px; font-weight: 900; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+.step { color: var(--teal-dark); font-size: 20px; font-weight: 900; }
 
+/* 按鈕樣式回歸 */
 .primary-button, .secondary-button, .quiet-button {
-  min-height: 56px;
+  min-height: 62px;
   border: 0;
   border-radius: 8px;
-  padding: 0 24px;
+  padding: 0 32px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
+  transition: transform 0.1s;
 }
-.primary-button { color: #fff; background: var(--teal); box-shadow: 0 8px 20px rgba(0, 117, 111, 0.2); }
+.primary-button { color: #fff; background: var(--teal); box-shadow: 0 10px 24px rgba(0, 117, 111, 0.22); }
 .secondary-button { color: var(--ink); background: var(--amber); }
 .quiet-button { color: var(--teal-dark); background: transparent; border: 2px solid var(--line); }
+.primary-button:active { transform: translateY(2px); }
 
-/* Grids */
-.book-grid, .strategy-list {
+/* 書籍網格：強制四本一排 */
+.book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .book-button {
   background: var(--panel);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 15px;
   border: 2px solid transparent;
   box-shadow: var(--shadow);
@@ -139,37 +146,82 @@ h2 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; margin-bottom: 20px; }
   text-align: left;
 }
 
-.book-image-wrap { aspect-ratio: 1/1.2; background: #eee; border-radius: 4px; overflow: hidden; }
+.book-image-wrap { 
+  aspect-ratio: 1/1.2; 
+  background: #eef5f2; 
+  border-radius: 6px; 
+  overflow: hidden; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .book-image-wrap img { width: 100%; height: 100%; object-fit: contain; }
-.book-title { font-size: 20px; font-weight: 900; }
+.book-title { font-size: 19px; font-weight: 900; line-height: 1.2; min-height: 46px; display: flex; align-items: center; }
 
+/* 策略清單回歸 */
+.strategy-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 20px; }
 .strategy-item {
   display: flex;
   gap: 14px;
-  padding: 15px;
-  border-left: 6px solid var(--amber);
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  padding: 18px;
+  border-left: 8px solid var(--amber);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 0 var(--line);
 }
-.strategy-number { width: 32px; height: 32px; flex-shrink: 0; background: var(--teal); color: #fff; border-radius: 50%; display: grid; place-items: center; font-weight: 900; }
-.strategy-text strong { display: block; font-size: 18px; margin-bottom: 4px; }
-.strategy-text span { font-size: 15px; color: var(--muted); }
+.strategy-number { width: 40px; height: 40px; flex-shrink: 0; background: var(--teal); color: #fff; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 18px; }
+.strategy-text strong { display: block; font-size: 22px; margin-bottom: 4px; }
+.strategy-text span { font-size: 17px; color: var(--muted); }
 
-/* Rating & Stats */
-.rating-box { background: #fff; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); margin-top: 20px; text-align: center; }
-.stars { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-.star-btn { background: none; border: none; font-size: 50px; color: #ddd; cursor: pointer; transition: 0.2s; }
-.star-btn.active { color: var(--amber); }
+/* 準備與測驗佈局回歸 */
+.ready-layout, .quiz-layout {
+  display: grid;
+  grid-template-columns: 0.4fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
 
-.stats-grid { display: grid; gap: 16px; margin-top: 20px; }
-.stat-row { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.stat-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 800; }
-.stat-bar-bg { height: 16px; background: var(--mint); border-radius: 8px; overflow: hidden; }
-.stat-bar-fill { height: 100%; background: var(--teal); transition: width 1s; }
+.selected-cover, .mini-cover {
+  background: #eef5f2;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  max-width: 100%;
+}
+.selected-cover img, .mini-cover img { width: 100%; display: block; object-fit: contain; }
 
-/* Responsive adjustments */
+/* 錯題解析回歸 */
+.miss-list { display: grid; gap: 14px; margin-top: 20px; }
+.miss-item {
+  padding: 18px;
+  border-left: 8px solid var(--coral);
+  background: #fff;
+  box-shadow: 0 1px 0 var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.miss-item strong { font-size: 20px; }
+.miss-item span { font-size: 17px; color: var(--muted); }
+
+/* 評分與統計回歸 */
+.stars { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
+.star-btn { background: none; border: none; font-size: 64px; color: #ddd; cursor: pointer; transition: 0.2s; }
+.star-btn.active { color: var(--amber); transform: scale(1.1); }
+
+.stat-row { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px; }
+.stat-info { display: flex; justify-content: space-between; font-weight: 900; font-size: 20px; margin-bottom: 10px; }
+.stat-bar-bg { height: 24px; background: var(--mint); border-radius: 12px; overflow: hidden; }
+.stat-bar-fill { height: 100%; background: var(--teal); transition: width 1s ease-out; }
+
+/* 響應式：平板小螢幕與手機 */
+@media (max-width: 900px) {
+  .book-grid { grid-template-columns: repeat(2, 1fr); }
+  .ready-layout, .quiz-layout { grid-template-columns: 1fr; gap: 20px; }
+  .selected-cover { max-height: 300px; }
+  .strategy-list { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 600px) {
-  .book-grid { grid-template-columns: 1fr; }
-  .actions { flex-direction: column; }
+  .actions { flex-direction: column; padding: 15px 20px 25px 20px; }
   .primary-button, .secondary-button, .quiet-button { width: 100%; }
 }

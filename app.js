@@ -53,7 +53,7 @@ const books = [
   }
 ];
 
-const state = {
+let state = {
   screen: "home",
   selectedBookId: null,
   quizIndex: 0,
@@ -69,7 +69,11 @@ const app = document.querySelector("#app");
 function getSelectedBook() { return books.find(b => b.id === state.selectedBookId) || books[0]; }
 function stopTimer() { if (state.timerId) { clearInterval(state.timerId); state.timerId = null; } }
 function setScreen(s) { stopTimer(); state.screen = s; render(); }
-function resetGame() { stopTimer(); Object.assign(state, { screen: "home", selectedBookId: null, quizIndex: 0, answers: [], remainingSeconds: TOTAL_SECONDS, userRating: 0, globalStats: null }); render(); }
+function resetGame() { 
+  stopTimer(); 
+  state = { screen: "home", selectedBookId: null, quizIndex: 0, answers: [], remainingSeconds: TOTAL_SECONDS, userRating: 0, globalStats: null }; 
+  render(); 
+}
 
 async function submitRating(rating) {
   state.userRating = rating;
@@ -78,9 +82,8 @@ async function submitRating(rating) {
   try {
     const res = await fetch("/api/rating", { method: "POST", body: JSON.stringify({ bookId: state.selectedBookId, rating }) });
     state.globalStats = await res.json();
-    state.screen = "stats";
-  } catch (e) { state.screen = "stats"; }
-  render();
+    setScreen("stats");
+  } catch (e) { setScreen("stats"); }
 }
 
 async function fetchStats() {
@@ -96,41 +99,181 @@ function topbar(label, home = true) {
 }
 
 function renderHome() {
-  app.innerHTML = `<section class="screen home"><div></div><div class="home-inner"><div class="hero-copy"><span class="badge">學習策略課程</span><h1>略讀大挑戰</h1><p class="lead">用 1 分鐘挑戰抓出一本書的重點。</p></div></div><div class="actions"><button class="primary-button" data-action="strategy">開始挑戰</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen home">
+      <div class="content">
+        <div class="hero-copy">
+          <span class="badge">學習策略課程｜略讀策略單元</span>
+          <h1>略讀大挑戰</h1>
+          <p class="lead">你會先認識略讀一本書的方法，再用 1 分鐘挑戰抓出一本書的重點。</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary-button" data-action="strategy">開始挑戰</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderStrategy() {
-  app.innerHTML = `<section class="screen">${topbar("略讀策略")}<div class="content"><h2>快速理解一本書的地方</h2><div class="strategy-list">${strategies.map((s, i) => `<div class="strategy-item"><div class="strategy-number">${i+1}</div><div class="strategy-text"><strong>${s.title}</strong><span>${s.detail}</span></div></div>`).join("")}</div></div><div class="actions"><button class="primary-button" data-action="choose">選一本書</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen">
+      ${topbar("略讀策略")}
+      <div class="content">
+        <h2>快速理解一本書，可以先看這些地方</h2>
+        <div class="strategy-list">
+          ${strategies.map((s, i) => `
+            <div class="strategy-item">
+              <div class="strategy-number">${i+1}</div>
+              <div class="strategy-text"><strong>${s.title}</strong><span>${s.detail}</span></div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary-button" data-action="choose">我知道了，選一本書</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderChoose() {
-  app.innerHTML = `<section class="screen">${topbar("選擇書本")}<div class="content"><h2>想挑戰哪一本？</h2><div class="book-grid">${books.map(b => `<button class="book-button" data-book-id="${b.id}"><div class="book-image-wrap"><img src="${b.image}"></div><div class="book-title">${b.title}</div></button>`).join("")}</div></div><div class="actions"><button class="quiet-button" data-action="strategy">回到策略</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen">
+      ${topbar("選擇書本")}
+      <div class="content">
+        <h2>想挑戰哪一本？</h2>
+        <div class="book-grid">
+          ${books.map(b => `
+            <button class="book-button" data-book-id="${b.id}">
+              <div class="book-image-wrap"><img src="${b.image}" alt="${b.title}"></div>
+              <div class="book-title">${b.title}</div>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="quiet-button" data-action="strategy">回到策略</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderReady() {
   const b = getSelectedBook();
-  app.innerHTML = `<section class="screen">${topbar("準備挑戰")}<div class="content"><h2>${b.title}</h2><p class="lead">請拿起實體書。準備好之後按下開始。</p></div><div class="actions"><button class="secondary-button" data-action="choose">換一本書</button><button class="primary-button" data-action="start">開始計時</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen">
+      ${topbar("準備挑戰")}
+      <div class="content ready-layout">
+        <div class="selected-cover"><img src="${b.image}"></div>
+        <div class="ready-copy">
+          <span class="badge" style="background: var(--coral); color: #fff; border: 0;">1 分鐘挑戰</span>
+          <h2>${b.title}</h2>
+          <p class="lead" style="text-align: left;">請拿起實體書。準備好之後按下開始，計時就會立刻啟動。</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="secondary-button" data-action="choose">換一本書</button>
+        <button class="primary-button" data-action="start">開始計時</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderTimer() {
   const b = getSelectedBook();
-  app.innerHTML = `<section class="screen">${topbar("略讀中")}<div class="content"><h2>${b.title}</h2><div style="font-size: 80px; font-weight: 900; text-align: center; margin: 40px 0;" data-timer>${state.remainingSeconds}s</div></div><div class="actions"><button class="quiet-button" data-action="finish-timer">我讀完了</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen">
+      ${topbar("1 分鐘略讀中")}
+      <div class="content" style="text-align: center;">
+        <div class="mini-cover" style="max-width: 200px; margin: 0 auto 20px;"><img src="${b.image}"></div>
+        <h2 style="margin-bottom: 10px;">${b.title}</h2>
+        <div style="font-size: 100px; font-weight: 950; color: var(--teal-dark);" data-timer>${state.remainingSeconds}s</div>
+      </div>
+      <div class="actions">
+        <button class="quiet-button" data-action="finish-timer">我讀完了，進入測驗</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderQuiz() {
   const b = getSelectedBook();
   const q = b.questions[state.quizIndex];
-  app.innerHTML = `<section class="screen">${topbar("測驗")}<div class="content"><h2>${q.question}</h2><div class="options" style="display: grid; gap: 10px;">${q.options.map((o, i) => `<button class="option-button primary-button" style="text-align: left; background: #fff; color: #223233; border: 2px solid #eee;" data-option-index="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div></div></section>`;
+  app.innerHTML = `
+    <section class="screen">
+      ${topbar(`測驗 ${state.quizIndex + 1}/${b.questions.length}`)}
+      <div class="content quiz-layout">
+        <div class="mini-cover"><img src="${b.image}"></div>
+        <div class="question-panel">
+          <h2>${q.question}</h2>
+          <div class="options" style="display: grid; gap: 14px;">
+            ${q.options.map((o, i) => `
+              <button class="primary-button" style="text-align: left; background: #fff; color: var(--ink); border: 2px solid var(--line); font-size: 20px;" data-option-index="${i}">
+                ${String.fromCharCode(65+i)}. ${o}
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
 }
 
 function renderResult() {
   const b = getSelectedBook();
-  app.innerHTML = `<section class="screen">${topbar("結果", false)}<div class="content"><h2>完成挑戰！</h2><p class="lead">${b.title} 的略讀已結束。</p></div><div class="actions"><button class="primary-button" data-action="go-rating">下一步：填寫回饋</button></div></section>`;
+  const missed = b.questions.map((q, i) => ({
+    q, i, selected: state.answers[i], correct: q.answer
+  })).filter(x => x.selected !== x.correct);
+  const score = b.questions.length - missed.length;
+
+  app.innerHTML = `
+    <section class="screen">
+      ${topbar("挑戰結果", false)}
+      <div class="content">
+        <div style="background: var(--teal-dark); color: #fff; padding: 30px; border-radius: 12px; display: flex; align-items: center; gap: 30px; margin-bottom: 30px;">
+          <div style="width: 100px; height: 100px; background: var(--amber); color: var(--ink); border-radius: 50%; display: grid; place-items: center; font-size: 40px; font-weight: 900;">${score}/${b.questions.length}</div>
+          <div>
+            <h2 style="margin: 0; color: #fff;">${missed.length === 0 ? "全部答對！" : "挑戰完成"}</h2>
+            <p style="margin: 5px 0 0; opacity: 0.8;">${b.title} 的略讀表現</p>
+          </div>
+        </div>
+        <div class="miss-list">
+          ${missed.length === 0 ? '<p class="lead">太棒了！你精準抓到了這本書的核心方向。</p>' : missed.map(m => `
+            <div class="miss-item">
+              <strong>第 ${m.i + 1} 題：${m.q.question}</strong>
+              <span>你的答案：${String.fromCharCode(65+m.selected)}. ${m.q.options[m.selected]}</span>
+              <span style="color: var(--teal); font-weight: 800;">正確答案：${String.fromCharCode(65+m.correct)}. ${m.q.options[m.correct]}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary-button" data-action="go-rating">完成，填寫回饋</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderRating() {
   const b = getSelectedBook();
-  app.innerHTML = `<section class="screen rating">${topbar("讀後回饋", false)}<div class="content"><div class="rating-box"><h2>${b.title}</h2><p>這本書對你有吸引力嗎？</p><div class="stars">${[1,2,3,4,5].map(v => `<button class="star-btn" data-value="${v}">★</button>`).join("")}</div></div></div><div class="actions"><button class="quiet-button" data-action="go-stats">看大家推薦什麼</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen rating">
+      ${topbar("讀後回饋", false)}
+      <div class="content">
+        <div class="rating-box">
+          <div class="mini-cover" style="max-width: 120px; margin: 0 auto 15px;"><img src="${b.image}"></div>
+          <h2>${b.title}</h2>
+          <p class="lead">這本書對你有吸引力嗎？會想深入閱讀嗎？</p>
+          <div class="stars">${[1,2,3,4,5].map(v => `<button class="star-btn" data-value="${v}">★</button>`).join("")}</div>
+          <p style="color: var(--muted);">點擊星星進行評分</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="quiet-button" data-action="go-stats">跳過，看大家推薦什麼</button>
+      </div>
+    </section>
+  `;
   
   const stars = app.querySelectorAll(".star-btn");
   stars.forEach(btn => {
@@ -145,14 +288,49 @@ function renderRating() {
 
 function renderStats() {
   const s = state.globalStats || [];
-  app.innerHTML = `<section class="screen stats">${topbar("推薦排行榜", false)}<div class="content"><h2>讀者推薦榜</h2><div class="stats-grid">${books.map(b => {
-    const st = s.find(x => x.bookId === b.id) || { avgRating: 0, count: 0 };
-    return `<div class="stat-row"><div class="stat-info"><span>${b.title}</span><span>${st.count > 0 ? Number(st.avgRating).toFixed(1) + "★" : "尚無評分"}</span></div><div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${(st.avgRating/5)*100}%"></div></div></div>`;
-  }).join("")}</div></div><div class="actions"><button class="primary-button" data-action="thanks">完成</button></div></section>`;
+  app.innerHTML = `
+    <section class="screen stats">
+      ${topbar("推薦排行榜", false)}
+      <div class="content">
+        <h2 style="text-align: center;">展覽現場讀者推薦榜</h2>
+        <div class="stats-grid">
+          ${books.map(b => {
+            const st = s.find(x => x.bookId === b.id) || { avgRating: 0, count: 0 };
+            return `
+              <div class="stat-row">
+                <div class="stat-info">
+                  <span>${b.title}</span>
+                  <span>${st.count > 0 ? Number(st.avgRating).toFixed(1) + " ★" : "尚無評分"} (${st.count}人)</span>
+                </div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${(st.avgRating/5)*100}%"></div></div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary-button" data-action="thanks">查看致謝</button>
+      </div>
+    </section>
+  `;
 }
 
-function renderLoading() { app.innerHTML = `<div class="screen"><h2>處理中...</h2></div>`; }
-function renderThanks() { app.innerHTML = `<section class="screen thanks"><div></div><div class="home-inner"><h1>謝謝參與！</h1><p class="lead">祝您學習愉快！</p></div><div class="actions"><button class="primary-button" data-action="home">回到首頁</button></div></section>`; }
+function renderLoading() { app.innerHTML = `<div class="screen" style="justify-content: center; align-items: center;"><h2>處理中...</h2></div>`; }
+
+function renderThanks() {
+  app.innerHTML = `
+    <section class="screen thanks">
+      <div class="content" style="text-align: center;">
+        <span class="badge">感謝參與</span>
+        <h1>謝謝您的參與！</h1>
+        <p class="lead">希望這次的體驗，能幫助您在未來的閱讀中更精準地捕捉智慧。<br>祝您學習愉快！</p>
+      </div>
+      <div class="actions">
+        <button class="primary-button" data-action="home">回到第一頁</button>
+      </div>
+    </section>
+  `;
+}
 
 function render() {
   const s = state.screen;
@@ -170,13 +348,23 @@ function render() {
 }
 
 app.addEventListener("click", e => {
-  const b = e.target.closest("[data-book-id]"); if (b) { state.selectedBookId = b.dataset.bookId; setScreen("ready"); return; }
-  const o = e.target.closest("[data-option-index]"); if (o) { 
+  const b = e.target.closest("[data-book-id]");
+  if (b) { state.selectedBookId = b.dataset.bookId; setScreen("ready"); return; }
+  
+  const o = e.target.closest("[data-option-index]");
+  if (o) { 
     state.answers.push(Number(o.dataset.optionIndex)); 
-    if (state.quizIndex < getSelectedBook().questions.length - 1) { state.quizIndex++; render(); } else { setScreen("result"); }
+    if (state.quizIndex < getSelectedBook().questions.length - 1) {
+      state.quizIndex++;
+      render();
+    } else {
+      setScreen("result");
+    }
     return; 
   }
-  const a = e.target.closest("[data-action]"); if (!a) return;
+  
+  const a = e.target.closest("[data-action]");
+  if (!a) return;
   const act = a.dataset.action;
   if (act === "home") resetGame();
   else if (act === "strategy") setScreen("strategy");
@@ -185,7 +373,8 @@ app.addEventListener("click", e => {
     state.screen = "timer"; render();
     state.timerId = setInterval(() => {
       state.remainingSeconds--;
-      const t = app.querySelector("[data-timer]"); if (t) t.textContent = state.remainingSeconds + "s";
+      const t = app.querySelector("[data-timer]");
+      if (t) t.textContent = state.remainingSeconds + "s";
       if (state.remainingSeconds <= 0) { stopTimer(); setScreen("quiz"); }
     }, 1000);
   }
